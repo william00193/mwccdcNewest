@@ -1,0 +1,280 @@
+<html layout:decorate="~{/layout/bootstrap}">
+
+
+<head>
+
+<style>
+	thead {background-color: beige;
+	font-size: 1.1rem;}
+
+	table {background-color: white;
+	text-align: center;
+	width: 80%;
+	margin: 10px auto;
+	border: 2px solid white;}
+
+	td {padding: 10px;}
+	h1 {color: Black;}
+
+</style>
+
+<title>Bootstrap Point</title>
+
+</head>
+
+
+
+<div layout:fragment="content">
+
+ <h1>Customer Preferences</h1>
+ <br>
+ <br>
+
+<div class="w-100 bg-success fs-4 text-center"><span id="msg"></span></div>
+<table>
+  <thead>
+    <tr>
+      <th scope="col">First Name</th>
+      <th scope="col">Last Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Phone</th>
+      <th scope="col">First Occupation</th>
+      <th scope="col">Preferred Stand</th>
+      <th scope="col">Reservation Time</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    <tr th:each="ccdcuser: ${ccdcuser}">
+
+      <td><div class="row_data" col_name="firstname" th:attr="col_val=${ccdcuser.firstname}" th:text="${ccdcuser.firstname}"></div></td>
+      <td><div class="row_data" col_name="lastname" th:attr="col_val=${ccdcuser.lastname}" th:text="${ccdcuser.lastname}"></div></td>
+      <td><div class="row_data" col_name="email" th:attr="col_val=${ccdcuser.email}" th:text="${ccdcuser.email}"></div></td>
+      <td><div class="row_data" col_name="phone" th:attr="col_val=${ccdcuser.phone}" th:text="${ccdcuser.phone}"></div></td>
+      <td><div class="row_data" col_name="firstoccupation" th:attr="col_val=${ccdcuser.firstoccupation}" th:text="${ccdcuser.firstoccupation}"></div></td>
+      <td><div class="row_data" col_name="preferredstand" th:attr="col_val=${ccdcuser.preferredstand}" th:text="${ccdcuser.preferredstand}"></div></td>
+      <td><div class="row_data" col_name="reservationtime" th:attr="col_val=${ccdcuser.reservationtime}" th:text="${ccdcuser.reservationtime}"></div></td>
+
+    </tr>
+
+  </tbody>
+
+  
+
+</table>
+
+<div id="btn_save" class="w-100 text-center bg-info"><a class="btn text-white">Save Button</a></div>
+
+<!-- Import button -->
+<div id="selectFileButton" class="w-100 text-center bg-danger"><a class="btn text-white">Button Import</a></div>
+
+
+<!-- Hidden input that allows only json files -->
+<input type="file" id="fileInput" accept=".json" style="display: none;">
+<div id="btn_append" class="w-100 text-center bg-info"><a class="btn text-white">Import & Append Button</a></div>
+
+
+
+<!-- New for hw11  -->
+<div id="rewardButton" class="w-100 text-center bg-danger"><a class="btn text-white">Reward</a></div>
+
+<script type="text/javascript">
+
+document.getElementById('btn_append').addEventListener('click', function() {
+	  document.getElementById('fileInput').click();
+	});
+
+/*  Getting the import button by ID, and selecting the hidden input by ID that only allows for json files */
+  document.getElementById('selectFileButton').addEventListener('click', function() {
+	    document.getElementById('fileInput').click();
+	});
+	
+	
+/* 	Getting the reward button hooked up to my newly mapped reward page */
+  document.getElementById('rewardButton').addEventListener('click', function() {
+	  window.location.href = '/bootstrap-reward';
+	});
+	
+
+
+  document.getElementById('fileInput').addEventListener('change', function(event) {
+	    const file = event.target.files[0];
+	    const reader = new FileReader();
+	    reader.onload = function(e) {
+	    const jsonContent = e.target.result;
+	    const jsonData = JSON.parse(jsonContent);
+	    };
+	    reader.readAsText(file);
+	});
+  
+
+
+
+  document.getElementById('btn_append').addEventListener('click', function() {
+	  const fileInput = document.getElementById('fileInput');
+	  const file = fileInput.files[0];
+
+	  if (!file) {
+	    console.error('Please select a JSON file to import.');
+	    return; 
+
+	  }
+	  const reader = new FileReader();
+	  reader.onload = function(e) {
+	  const jsonContent = e.target.result;
+	   
+	    try {
+	      const jsonData = JSON.parse(jsonContent);
+	      handleJsonImport(jsonData); 
+	    } catch (error) {
+	      console.error('Error parsing JSON file:', error);
+	    }
+	  };
+
+	  reader.readAsText(file);
+
+	});
+
+
+  
+  function handleJsonImport(jsonData) {
+	  console.log("Received JSON data:", jsonData);
+
+	  // Ensure jsonData is a string
+	  if (typeof jsonData === 'string') {
+	    try {
+	      const parsedData = JSON.parse(jsonData);
+	      console.log("Parsed JSON data:", parsedData);
+
+	      let isDuplicate = false;
+	      parsedData.forEach(function(obj) {
+	        isDuplicate = false; 
+
+	        // Check for duplicates based on unique firstname
+	        $('table:first tbody tr').each(function() {
+	          const existingName = $(this).find('td[col_name="firstname"]').text();
+	          if (existingName === obj.firstname) {
+	            isDuplicate = true;
+	            return false; 
+	          }
+	        });
+
+	        // Append new row if not a duplicate
+	     if (!isDuplicate) {
+	  		
+
+    	      var newRow = $('<tr>');
+    	      newRow.append($('<td col_name="firstname" is-modified="false">').html(obj.firstname));
+    	      /* appending with is-modified condition attached */
+    		    newRow.append($('<td col_name="lastname" is-modified="false">').html(obj.lastname));
+    		    newRow.append($('<td col_name="email" is-modified="false">').html(obj.email));
+    		    newRow.append($('<td col_name="phone" is-modified="false">').html(obj.phone));
+    		    newRow.append($('<td col_name="firstoccupation" is-modified="false">').html(obj.firstoccupation));
+    		    newRow.append($('<td col_name="preferredstand" is-modified="false">').html(obj.preferredstand));
+    		    newRow.append($('<td col_name="reservationtime" is-modified="false">').html(obj.reservationtime));
+    	      $('table:first tbody').append(newRow);
+    	    }
+	      });
+	    } catch (error) {
+	      console.error("Error parsing JSON:", error);
+	      alert("Error parsing JSON file. Please check the file format.");
+	    }
+	  } else {
+	    console.error("Invalid JSON data: Expected a string.");
+	  }
+	}
+
+  //On Click functionality works for each of the individual values, keeping DB constraints and
+  //Allowiung user to change only what is allowed.
+  $(document).ready(function($){
+  	  $(document).on("click", ".row_data", function(event){
+  		 event.preventDefault(); 
+  		 var ele = $(this);
+
+  	
+  		 //What im allowing to be edited
+  		 if(ele.attr("col_name") != "firstname" && ele.attr("col_name") != "lastname" && ele.attr("col_name") != "preferredstand" && ele.attr("col_name") != "firstoccupation"  && ele.attr("col_name") != "email"){
+  			 return false;
+  		 }
+
+  		 //Turing div into editable div, adding background color and focusing the cursor 
+  		 ele.attr("contenteditable", "true"); 
+  		 ele.addClass("bg-warning");
+  		 ele.focus();
+  	  });
+
+
+		//Removing the bg-warning class if no changes have occured and original value stays the same
+  	  $(document).on("focusout", ".row_data", function(event){
+  		  var ele = $(this);
+  		  if(ele.attr("col_val") == ele.html()){
+  			  ele.removeClass("bg-warning");
+  		  }
+  	  });
+
+
+  	  $(document).on("click", "#btn_save", function(event){
+  		  var dataArray = [];
+  		  $(".bg-warning").each(function(){
+  			  var ele = $(this);
+  			  var trEle = ele.closest("tr");
+
+
+  			  /* list of variables or attributes im going to try and select, giving var name */
+  			  var firstname = trEle.find("div[col_name=firstname]").html();
+  			  var lastname = trEle.find("div[col_name=lastname]").html();
+  			  var email = trEle.find("div[col_name=email]").html();
+  			  var phone = trEle.find("div[col_name=phone]").html();
+  			  var firstoccupation = trEle.find("div[col_name=firstoccupation]").html();
+  			  var preferredstand = trEle.find("div[col_name=preferredstand]").html();
+
+  			  //What im pushing into the array to allow saving
+  			  dataArray.push({"firstname":firstname, 
+  				  "lastname":lastname,"email":email,
+  				  "phone":phone,
+  				  "firstoccupation":firstoccupation,
+  				  "preferredstand":preferredstand});
+  		});
+  		  
+  		  //Dont do anything and return if array hasnt seen changes..
+  		  if(dataArray.length == 0){
+  			  return;
+  		  }
+
+  		//Never used this 'stringify' function before, but this seems to save alot of code/space
+  		  var jsonData = JSON.stringify(dataArray);
+  		  console.log(jsonData);
+
+
+  		  //ajax call working as intended, referencing the saveUser function in the ccdcService file
+  		  $.ajax({
+  			  url:"/api/saveUser",
+  			  type:"POST",
+  			  contentType:"application/json",
+  			  data: jsonData,
+  			  success: function(response) {
+  				  $("table:first tbody tr td[is-modified='true']").attr("is-modified", "false");
+  				  //Message to show successful AJAX DB call
+  				  $('#msg').text("Success!").show().fadeOut(3000);
+  				  $(".bg-warning").each(function(){
+  					  var ele = $(this);
+  					  ele.removeClass("bg-warning");
+  				  });
+  			  },
+  			//Message to show un-successful AJAX DB call
+  			  error: function(xhr, status, error){
+  				  $('#msg').text("Failed!").show().fadeOut(3000);
+  			  }
+  		  })
+  	  });
+  });
+
+  </script>
+
+  
+
+</div>
+
+
+
+</html>
