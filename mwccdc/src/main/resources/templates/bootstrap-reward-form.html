@@ -1,0 +1,104 @@
+
+<!-- New page that was simply a copy of my advance-form.html with some new additons for thymeleaf hw11-->
+
+<html layout:decorate="~{/layout/bootstrap}">
+
+<head>
+
+<style>
+	thead {background-color: beige;
+	font-size: 1.1rem;}
+
+	table {background-color: white;
+	text-align: center;
+	width: 80%;
+	margin: 10px auto;
+	border: 2px solid white;}
+
+	td {padding: 10px;}
+	h1 {color: Black;}
+
+</style>
+    <title>Reward Result</title>
+</head>
+
+<body>
+    <div layout:fragment="content">   
+
+        <h1>Reward Result</h1>
+        
+        <input type="text" class="w-25 text-center" id="searchInput" placeholder="Search">
+        <br>
+		
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>First Occupation</th>
+                    <th>Preferred Stand</th>
+                    <th>Reservation Time</th>
+                    <th>Seat Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${allocatedSeats}">
+                    <td th:text="${user.firstname}"></td>
+                    <td th:text="${user.lastname}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td th:text="${user.phone}"></td>
+                    <td th:text="${user.firstoccupation}"></td>
+                    <td th:text="${user.preferredstand}"></td>
+                    <td th:text="${user.reservationtime}"></td>
+                    <td th:text="${user.seatNumber}"></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        
+        <!-- back button is new for this one 11-->
+        <button id="backButton" class="w-100 text-center bg-info">Back to Preference Page</button>
+        
+        <script type="text/javascript">
+        
+        
+/*         Back button functionality, simply just taking me back to the editable table or home page */
+        document.getElementById('backButton').addEventListener('click', function() {
+        	  window.location.href = '/bootstrap-point';
+        	});
+        
+
+/* constants defined for the search input field */
+const searchInput = document.getElementById('searchInput');
+const tableRows = document.querySelectorAll('table tr');
+
+
+/* Event listener on the input field being its the only one on this page. Also lowering the case of input */
+searchInput.addEventListener('input', () => {
+  const searchTerm = searchInput.value.toLowerCase();   
+
+
+/*   for each looping through each row, searching the individual values in the td elements */
+  tableRows.forEach(row => {
+    let display = false;
+    const cells = row.querySelectorAll('td');
+    cells.forEach(cell => {
+      if (cell.textContent.toLowerCase().includes(searchTerm)) {
+        display = true;
+      }
+    });
+    
+/*     What to display and not display based on whether display is 'true' */
+    row.style.display = display ? '' : 'none';
+  });
+});
+
+</script>
+  
+    </div>
+
+  
+</body>
+</html>

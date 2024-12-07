@@ -1,0 +1,51 @@
+<html layout:decorate="~{/layout/bootstrap}">
+
+
+<head>
+<style>
+	thead {background-color: beige;
+	font-size: 1.1rem;}
+	
+	table {background-color: white;
+	text-align: center;
+	width: 80%;
+	margin: 10px auto;
+	border: 2px solid white;}
+	
+	td {padding: 10px;}
+	
+	h1 {color: Black;}
+
+</style>
+<title>Bootstrap Feature1</title>
+</head>
+
+<div layout:fragment="content">
+
+<h1>Preference Summary</h1>
+ <br>
+ <br>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Stand Position</th>
+        <th>Number of Available Seats</th>
+        <th>Number of Preferred Seats</th>
+        <th>Discount Price</th>
+        <th>Estimated Total Earnings</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="user : ${users1}">
+        <td th:text="${user.StandPosition}"></td>
+        <td th:text="${user.AvailSeats}"></td>
+        <td th:text="${user.PreferredSeats}"></td>
+        <td th:text="${user.DiscountPrice}"></td>
+        <td th:text="${user.EstimatedTotalEarnings}"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</html>
